@@ -1,27 +1,54 @@
 package com.company;
 
-class Application {
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
+
+public class Main {
+    public static final int size=10;
+
+    public static ArrayDeque<Integer> stack = new ArrayDeque<>();
+
+    public static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
-        Tree tree = new Tree();
+        System.out.println("Чтобы начать игру введите число" );
+        int num = scanner.nextInt();
+        stack.addLast(num);
+        secondThread secondThread = new secondThread();
+        secondThread.start();
+        while (true){
+            num=scanner.nextInt();
+            try{
+                if(num==stack.peekLast()+1) stack.addLast(num); //проверяем правильность ввода
+                else System.out.println("Ошибка!");
+            }catch (EmptyStackException e){//если пока Scanner ждет secondThread удалил поседний элем
+                break;
+            }
 
-        tree.insertNode(6);
-        tree.insertNode(8);
-        tree.insertNode(5);
-        tree.insertNode(8);
-        tree.insertNode(2);
-        tree.insertNode(9);
-        tree.insertNode(7);
-        tree.insertNode(4);
-        tree.insertNode(10);
-        tree.insertNode(3);
-        tree.insertNode(1);
-
-        tree.printTree();
-
-        tree.deleteNode(5);
-        tree.printTree();
-
-        Node foundNode = tree.findNodeByValue(7);
-        foundNode.printNode();
+            System.out.println("\n"+stack+"\n");
+        }
     }
+
+
+
+
+    public static class secondThread extends Thread{
+        public secondThread(){
+
+            while (!stack.isEmpty()&&stack.size()<size){
+
+                try {
+                    Thread.sleep(1500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if(stack.size()>=size-1){break;}
+                stack.pollLast();
+                System.out.println("\n"+stack+"\n");
+
+            }
+            System.out.println("Игра окончена");
+            System.exit(0); //scanner все еще ожидает ввода, выходим из программы
+        }
+    }
+
 }
